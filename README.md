@@ -4,6 +4,18 @@
  
 A data pipeline that automatically detects exoplanet transits from real NASA TESS telescope data. Given any star name, the pipeline fetches light curve data, runs a Box Least Squares (BLS) transit search, and produces a phase-folded transit plot — no prior knowledge of the planet's period or timing required.
  
+Includes a Streamlit web app where anyone can type in a star name and get results without touching any code.
+ 
+## Web App
+ 
+Type in any star name, choose Fast mode (3 sectors, ~3-5 min) or Full mode (all sectors, ~10-20 min), and the app automatically fetches TESS data, runs BLS, and displays the raw light curve, periodogram, and phase-folded transit. If no significant transit is detected, it says so rather than showing a misleading plot.
+ 
+To run locally:
+```
+pip install -r requirements.txt
+streamlit run app.py
+```
+ 
 ## Overview
  
 When a planet passes in front of its star from our perspective, it blocks a small fraction of the star's light, causing a periodic dip in brightness called a transit. This pipeline detects those dips automatically by:
@@ -11,7 +23,8 @@ When a planet passes in front of its star from our perspective, it blocks a smal
 1. Querying NASA's MAST archive via the `lightkurve` library
 2. Downloading and stitching multi-sector TESS light curves with proper per-sector normalization
 3. Running BLS (Box Least Squares) — the same algorithm used in real exoplanet discovery — to find the best-fit orbital period
-4. Phase-folding all available data at the detected period to produce a clean average transit profile
+4. Checking detection significance using peak BLS power and transit depth thresholds
+5. Phase-folding all available data at the detected period to produce a clean average transit profile
 ## Results
  
 | Star | Detected Period | True Period | Transit Depth |
@@ -29,20 +42,16 @@ Both periods match published values to 4 decimal places. The phase-folded light 
  
 **frequency_factor for grid control** — lightkurve internally determines period grid density from dataset length. Using `frequency_factor` overrides this to keep the grid computationally tractable without sacrificing period accuracy.
  
-## Usage
+**Significance thresholds** — BLS always returns a best period even for stars with no planet, so detections are only shown when peak power ≥ 50 and transit depth ≥ 0.05%. Below these thresholds the result is flagged as noise rather than a planet candidate.
  
-```python
-detect_transit("WASP-17")   # hot Jupiter, 3.74 day period
-detect_transit("HAT-P-7")   # hot Jupiter, 2.20 day period
-detect_transit("any_star")  # works on any star with TESS data
-```
+**Fast/Full mode toggle** — Fast mode downloads 3 sectors (~3-5 min), Full mode downloads all available sectors (~10-20 min). More sectors improve signal-to-noise for long-period or shallow transits but cost significantly more time.
  
-## How to Run
+## How to Run (Notebook)
  
 1. Clone the repo
 2. Install dependencies:
    ```
-   pip install lightkurve astropy numpy matplotlib
+   pip install lightkurve astropy numpy matplotlib streamlit
    ```
 3. Open `exoplanet.ipynb` in VS Code or Jupyter and run all cells
 ## Tech Stack
@@ -51,11 +60,14 @@ detect_transit("any_star")  # works on any star with TESS data
 - lightkurve (NASA TESS/Kepler data access)
 - astropy
 - numpy, matplotlib
+- Streamlit (web app)
 ## Project Structure
  
 ```
 exoplanet-pipeline/
-├── exoplanet.ipynb   # Main notebook with full pipeline
+├── exoplanet.ipynb   # Main analysis notebook
+├── app.py            # Streamlit web app
+├── requirements.txt  # Dependencies
 └── README.md
 ```
  
