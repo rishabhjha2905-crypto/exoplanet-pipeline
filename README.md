@@ -1,12 +1,15 @@
 # Exoplanet Transit Detection Pipeline
  
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rishabhjha2905-crypto/exoplanet-pipeline/blob/main/exoplanet.ipynb)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://exoplanet-transit-finder.streamlit.app/)
  
 A data pipeline that automatically detects exoplanet transits from real NASA TESS telescope data. Given any star name, the pipeline fetches light curve data, runs a Box Least Squares (BLS) transit search, and produces a phase-folded transit plot — no prior knowledge of the planet's period or timing required.
  
 Includes a Streamlit web app where anyone can type in a star name and get results without touching any code.
  
 ## Web App
+ 
+**Live demo: [exoplanet-transit-finder.streamlit.app](https://exoplanet-transit-finder.streamlit.app/)**
  
 Type in any star name, choose Fast mode (3 sectors, ~3-5 min) or Full mode (all sectors, ~10-20 min), and the app automatically fetches TESS data, runs BLS, and displays the raw light curve, periodogram, and phase-folded transit. If no significant transit is detected, it says so rather than showing a misleading plot.
  
